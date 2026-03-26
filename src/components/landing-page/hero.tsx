@@ -16,7 +16,7 @@ export const Hero = () => {
           priority
           quality={100}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background/90" />
+        <div className="absolute inset-0 bg-linear-to-b from-background/20 via-transparent to-background/90" />
         <div className="absolute inset-0 bg-background/10" />
       </div>
 
@@ -36,14 +36,14 @@ export const Hero = () => {
           </span>
         </h1>
 
-        <p className="mx-auto max-w-[700px] text-zinc-400 md:text-xl/relaxed lg:text-2xl/relaxed mb-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-400 font-medium leading-relaxed">
+        <p className="mx-auto max-w-175 text-zinc-400 md:text-xl/relaxed lg:text-2xl/relaxed mb-10 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-400 font-medium leading-relaxed">
           Mint your <span className="text-white font-semibold">flakeSBETH</span>—a soulbound receipt token. 
           Accrue <span className="text-white font-semibold">$FLAKE</span> and gamify your staking 
           reputation on the Ethereum network.
         </p>
 
         {/* Lido-inspired Stats Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-[900px] mx-auto mb-12 py-6 px-8 rounded-3xl bg-zinc-950/40 backdrop-blur-xl border border-white/5 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-600">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-225 mx-auto mb-12 py-6 px-8 rounded-3xl bg-zinc-950/40 backdrop-blur-xl border border-white/5 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-600">
           <div className="flex flex-col gap-1 text-left">
             <div className="flex items-center gap-2 text-[10px] text-zinc-500 font-bold uppercase tracking-widest">
               <Zap className="size-3" />
