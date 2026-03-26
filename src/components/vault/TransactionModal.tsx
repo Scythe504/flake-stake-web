@@ -23,7 +23,7 @@ interface TransactionModalProps {
   onOpenChange: (open: boolean) => void;
   status: "idle" | "pending" | "confirming" | "success" | "error";
   hash?: string;
-  error?: any;
+  error?: string | null;
 }
 
 export function TransactionModal({ 
@@ -58,7 +58,8 @@ export function TransactionModal({
 
   const handleOpenChange = (open: boolean) => {
     if (!open && !canClose) return;
-    onOpenChange(open);
+    // Decouple from event loop to avoid flushSync issues in some React/Radix versions
+    setTimeout(() => onOpenChange(open), 0);
   };
 
   return (
@@ -67,7 +68,7 @@ export function TransactionModal({
         showCloseButton={false}
         onPointerDownOutside={(e) => { if (!canClose) e.preventDefault(); }}
         onEscapeKeyDown={(e) => { if (!canClose) e.preventDefault(); }}
-        className="bg-zinc-950 border-white/5 sm:max-w-106.25 rounded-3xl p-8 backdrop-blur-xl outline-none"
+        className="bg-zinc-950 border-white/5 sm:max-w-[425px] rounded-3xl p-8 backdrop-blur-xl outline-none ring-0 shadow-2xl"
       >
         <DialogHeader className="flex flex-col items-center justify-center text-center space-y-4">
           <div className="flex justify-center">
@@ -95,7 +96,7 @@ export function TransactionModal({
             {status === "confirming" ? "Your transaction is being included in a block. This usually takes a few seconds." : 
              status === "pending" ? "Please confirm the transaction in your wallet." :
              status === "success" ? "The vault has been updated successfully with your assets." : 
-             status === "error" ? (error?.shortMessage || error?.message || "An unexpected error occurred during the transaction.") : 
+             status === "error" ? (error || "An unexpected error occurred during the transaction.") : 
              ""}
           </DialogDescription>
         </DialogHeader>
@@ -108,7 +109,7 @@ export function TransactionModal({
                 Transaction Hash
               </div>
               <div className="flex items-center justify-between gap-3">
-                <code className="text-xs font-mono text-zinc-300 truncate max-w-60">
+                <code className="text-xs font-mono text-zinc-300 truncate max-w-[240px]">
                   {hash}
                 </code>
                 <Button 
@@ -134,13 +135,13 @@ export function TransactionModal({
           </div>
         )}
 
-        <DialogFooter className="mt-4 border-none bg-transparent p-0">
+        <DialogFooter className="mt-4 border-none bg-transparent p-0 flex flex-col sm:flex-col gap-2">
           <Button 
             onClick={() => handleOpenChange(false)}
             disabled={!canClose}
-            className="w-full h-12 rounded-2xl font-bold bg-primary hover:scale-[1.01] transition-transform"
+            className="w-full h-12 rounded-2xl font-bold bg-primary hover:scale-[1.01] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {status === "success" ? "Awesome" : "Close"}
+            {status === "success" ? "Awesome" : status === "error" ? "Dismiss" : "Close"}
           </Button>
         </DialogFooter>
       </DialogContent>

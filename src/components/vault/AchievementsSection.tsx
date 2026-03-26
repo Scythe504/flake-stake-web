@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Lock, Trophy, Star, Crown, Gem } from "lucide-react";
+import { Lock, Trophy, Star, Crown, Gem, LucideIcon } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -11,7 +11,7 @@ interface Achievement {
   requirement: string;
   image: string;
   unlocked: boolean;
-  icon: any;
+  icon: LucideIcon;
 }
 
 interface AchievementsSectionProps {

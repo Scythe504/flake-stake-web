@@ -20,7 +20,6 @@ export const config = createConfig(
 
     // Optional App Info
     appDescription: "Next-gen ETH Soulbound Staking",
-    appUrl: "https://flake.fi", // your app's url
-    appIcon: "https://family.co/logo.png", // your app's icon, optional
+    appUrl: "https://flake-stake.vercel.app", // your app's url
   }),
 );

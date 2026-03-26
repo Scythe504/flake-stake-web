@@ -27,9 +27,9 @@ export default function AppDashboard() {
   const { data: totalStakedData } = useTotalStaked();
 
   const typedStakeInfo = stakeInfo as unknown as StakeInfoReturn;
-  const stakedAmount = Array.isArray(typedStakeInfo) ? typedStakeInfo[0] : 0n;
-  const pendingRewards = Array.isArray(typedStakeInfo) ? typedStakeInfo[1] : 0n;
-  const totalStaked = (totalStakedData as bigint) || 0n;
+  const stakedAmount = Array.isArray(typedStakeInfo) ? typedStakeInfo[0] : BigInt(0);
+  const pendingRewards = Array.isArray(typedStakeInfo) ? typedStakeInfo[1] : BigInt(0);
+  const totalStaked = (totalStakedData as bigint) || BigInt(0);
 
   // Achievement booleans from StakeInfoReturn
   const hasGenesis = Array.isArray(typedStakeInfo) ? typedStakeInfo[4] : false;

@@ -96,11 +96,14 @@ export function VaultActionCard({
     return undefined;
   };
 
-  const getActiveError = () => {
-    if (activeTx === "stake") return stakeHook.error;
-    if (activeTx === "unstake") return unstakeHook.error;
-    if (activeTx === "claim") return claimHook.error;
-    return undefined;
+  const getActiveErrorString = () => {
+    let err: { shortMessage?: string; message?: string } | null = null;
+    if (activeTx === "stake") err = stakeHook.error as { shortMessage?: string; message?: string };
+    else if (activeTx === "unstake") err = unstakeHook.error as { shortMessage?: string; message?: string };
+    else if (activeTx === "claim") err = claimHook.error as { shortMessage?: string; message?: string };
+    
+    if (!err) return null;
+    return err.shortMessage || err.message || "Unknown error";
   };
 
   return (
@@ -196,7 +199,7 @@ export function VaultActionCard({
                     value={unstakeAmount}
                     onChange={(e) => setUnstakeAmount(e.target.value)}
                   />
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-primary">sbETH</div>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 text-sm font-bold text-primary">SBETH</div>
                 </div>
               </div>
 
@@ -247,7 +250,7 @@ export function VaultActionCard({
 
               <Button
                 size="lg"
-                className="w-full h-14 rounded-2xl text-xl font-bold shadow-2xl shadow-primary/30"
+                className="w-full h-16 rounded-2xl text-xl font-bold shadow-2xl shadow-primary/30"
                 disabled={pendingRewards === BigInt(0) || claimHook.isPending || claimHook.isConfirming || !isSupportedChain}
                 onClick={handleClaim}
               >
@@ -264,7 +267,7 @@ export function VaultActionCard({
                 )}
               </Button>
               
-              <p className="text-xs text-zinc-500 max-w-70 text-center">
+              <p className="text-xs text-zinc-500 max-w-[280px] text-center">
                 Rewards are calculated per block based on your total staked amount relative to the vault size.
               </p>
             </div>
@@ -277,7 +280,7 @@ export function VaultActionCard({
         onOpenChange={setIsModalOpen}
         status={getActiveStatus()}
         hash={getActiveHash()}
-        error={getActiveError()}
+        error={getActiveErrorString()}
       />
     </Card>
   );
