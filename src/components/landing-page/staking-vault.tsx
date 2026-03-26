@@ -1,11 +1,21 @@
+"use client";
+
 import { Card, CardContent } from "@/components/ui/card"
 import { 
   Wallet, 
   Lock, 
   Coins,
   Globe,
-  Zap
+  Zap,
+  Shield,
+  FileText,
+  Award,
+  ExternalLink,
+  Copy
 } from "lucide-react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { addressConfig } from "@/constants/addresses"
+import { useState } from "react"
 
 const VAULT_STEPS = [
   {
@@ -29,6 +39,37 @@ const VAULT_STEPS = [
 ]
 
 export const StakingVault = () => {
+  const [copiedAddress, setCopiedAddress] = useState<string | null>(null)
+
+  const copyToClipboard = (address: string) => {
+    navigator.clipboard.writeText(address)
+    setCopiedAddress(address)
+    setTimeout(() => setCopiedAddress(null), 2000)
+  }
+
+  const networks = [
+    {
+      id: "sepolia",
+      name: "Ethereum Sepolia",
+      explorer: "https://sepolia.etherscan.io/address/",
+      config: addressConfig.sepolia
+    },
+    {
+      id: "base",
+      name: "Base Sepolia",
+      explorer: "https://sepolia.basescan.org/address/",
+      config: addressConfig.base
+    }
+  ]
+
+  const contractLabels = [
+    { key: "proxyAddr", label: "Staking Contract (ERC1967-Proxy)", icon: Shield },
+    { key: "implContract", label: "Staking Contract (Implementation)", icon: FileText },
+    { key: "flakeEth", label: "flakeSBETH (Soulbound ETH)", icon: Coins },
+    { key: "flakeToken", label: "$FLAKE Reward Token (ERC-20)", icon: Coins },
+    { key: "achievementNft", label: "Achievement NFT (ERC-721)", icon: Award }
+  ]
+
   return (
     <section id="vault" className="py-24 sm:py-32 bg-zinc-950 text-white overflow-hidden relative">
       {/* Background Glow */}
@@ -85,19 +126,74 @@ export const StakingVault = () => {
           ))}
         </div>
 
-        {/* Network Badge */}
-        <div id="contracts" className="flex flex-col items-center justify-center p-8 border border-white/5 rounded-3xl bg-zinc-900/30 text-center scroll-mt-24">
-          <div className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-4">Current Deployment</div>
-          <div className="flex gap-4">
-            <div className="flex items-center gap-2 text-sm font-medium bg-zinc-950 px-4 py-2 rounded-xl border border-white/5">
-              <div className="size-2 rounded-full bg-emerald-500" />
-              Ethereum Sepolia
-            </div>
-            <div className="flex items-center gap-2 text-sm font-medium bg-zinc-950 px-4 py-2 rounded-xl border border-white/5">
-              <div className="size-2 rounded-full bg-blue-500" />
-              Base Sepolia
-            </div>
+        {/* Current Deployment Section */}
+        <div id="contracts" className="scroll-mt-24">
+          <div className="text-center mb-10">
+            <div className="text-zinc-500 text-xs font-bold uppercase tracking-[0.3em] mb-2">Current Deployment</div>
+            <h3 className="text-2xl font-bold">Verified Contracts</h3>
           </div>
+
+          <Tabs defaultValue="sepolia" className="w-full max-w-4xl mx-auto">
+            <div className="flex justify-center mb-8">
+              <TabsList className="bg-zinc-900 border-white/5 h-12 p-1 rounded-xl">
+                {networks.map((net) => (
+                  <TabsTrigger 
+                    key={net.id} 
+                    value={net.id}
+                    className="rounded-lg px-8 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-bold"
+                  >
+                    <div className={`size-2 rounded-full ${net.id === "sepolia" ? "bg-blue-500": "bg-emerald-500"} animate-pulse`}/>
+                    {net.name}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
+
+            {networks.map((net) => (
+              <TabsContent key={net.id} value={net.id} className="mt-0 outline-none space-y-3">
+                {contractLabels.map((item) => {
+                  const address = net.config[item.key as keyof typeof net.config]
+                  const explorerLink = `${net.explorer}${address}`
+                  
+                  return (
+                    <div key={item.key} className="flex flex-col md:flex-row items-center justify-between p-4 rounded-2xl bg-zinc-900/50 border border-white/5 group hover:border-primary/20 transition-colors gap-4">
+                      <div className="flex items-center gap-4">
+                        <div className="size-10 rounded-xl bg-zinc-900 flex items-center justify-center border border-white/5 text-primary">
+                          <item.icon className="size-5" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-white mb-0.5">{item.label}</div>
+                          <div className="text-[10px] font-mono text-zinc-500 break-all">{address}</div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => copyToClipboard(address)}
+                          className="p-2 rounded-lg bg-zinc-900 border border-white/5 hover:bg-zinc-800 text-zinc-400 transition-colors relative"
+                          title="Copy Address"
+                        >
+                          {copiedAddress === address && (
+                            <span className="text-[10px] absolute -top-8 left-1/2 -translate-x-1/2 bg-emerald-500 text-white px-2 py-1 rounded">Copied!</span>
+                          )}
+                          <Copy className="size-4" />
+                        </button>
+                        <a
+                          href={explorerLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-2 rounded-lg bg-primary/10 border border-primary/20 hover:bg-primary/20 text-primary transition-colors flex items-center gap-2 text-xs font-bold px-4"
+                        >
+                          Explorer
+                          <ExternalLink className="size-3" />
+                        </a>
+                      </div>
+                    </div>
+                  )
+                })}
+              </TabsContent>
+            ))}
+          </Tabs>
         </div>
       </div>
     </section>

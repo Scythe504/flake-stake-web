@@ -14,6 +14,7 @@ import { HeaderSection } from "@/components/vault/HeaderSection";
 import { StatsGrid } from "@/components/vault/StatsGrid";
 import { ConnectWalletCard } from "@/components/vault/ConnectWalletCard";
 import { VaultActionCard } from "@/components/vault/VaultActionCard";
+import { AchievementsSection } from "@/components/vault/AchievementsSection";
 
 export default function AppDashboard() {
   const { isConnected, address } = useAccount();
@@ -26,9 +27,14 @@ export default function AppDashboard() {
   const { data: totalStakedData } = useTotalStaked();
 
   const typedStakeInfo = stakeInfo as unknown as StakeInfoReturn;
-  const stakedAmount = Array.isArray(typedStakeInfo) ? typedStakeInfo[0] : BigInt(0);
-  const pendingRewards = Array.isArray(typedStakeInfo) ? typedStakeInfo[1] : BigInt(0);
-  const totalStaked = (totalStakedData as bigint) || BigInt(0);
+  const stakedAmount = Array.isArray(typedStakeInfo) ? typedStakeInfo[0] : 0n;
+  const pendingRewards = Array.isArray(typedStakeInfo) ? typedStakeInfo[1] : 0n;
+  const totalStaked = (totalStakedData as bigint) || 0n;
+
+  // Achievement booleans from StakeInfoReturn
+  const hasGenesis = Array.isArray(typedStakeInfo) ? typedStakeInfo[4] : false;
+  const hasWhale = Array.isArray(typedStakeInfo) ? typedStakeInfo[5] : false;
+  const hasDiamondHands = Array.isArray(typedStakeInfo) ? typedStakeInfo[6] : false;
 
   if (!isConnected) {
     return (
@@ -58,14 +64,21 @@ export default function AppDashboard() {
           pendingRewards={pendingRewards}
         />
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           <VaultActionCard 
             ethBalance={ethBalance}
             stakedAmount={stakedAmount}
             pendingRewards={pendingRewards}
             isSupportedChain={isSupportedChain}
           />
+          {/* Recent Activity Card could go here in future */}
         </div>
+
+        <AchievementsSection 
+          hasGenesis={hasGenesis}
+          hasWhale={hasWhale}
+          hasDiamondHands={hasDiamondHands}
+        />
       </main>
       <Footer />
     </div>
