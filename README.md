@@ -1,21 +1,47 @@
-# Next.js template
+# flake-stake-web
 
-This is a Next.js template with shadcn/ui.
+Web client for the [Flake Staking Protocol](https://github.com/scythe504/flake-staking-contracts) — stake ETH, receive soulbound receipt tokens, earn $FLAKE rewards, and track on-chain staking reputation.
 
-## Adding components
+**Live**: [flake-stake.vercel.app](https://flake-stake.vercel.app)
 
-To add components to your app, run the following command:
+---
+
+## Stack
+
+- [Next.js](https://nextjs.org/) (App Router)
+- [wagmi](https://wagmi.sh/) + [viem](https://viem.sh/) — wallet and contract interactions
+- [Tailwind CSS](https://tailwindcss.com/) — styling
+- Deployed on [Vercel](https://vercel.com/)
+
+Contract ABIs and addresses are colocated in `src/constants/contracts.ts` — no external ABI files needed.
+
+---
+
+## Getting Started
 
 ```bash
-npx shadcn@latest add button
+git clone https://github.com/scythe504/flake-stake-web
+cd flake-stake-web
+npm install
 ```
 
-This will place the ui components in the `components` directory.
+Then run the dev server:
 
-## Using components
-
-To use the components in your app, import them as follows:
-
-```tsx
-import { Button } from "@/components/ui/button";
+```bash
+npm run dev
 ```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+---
+
+## Supported Networks
+
+- Ethereum Sepolia
+- Base Sepolia
+
+---
+
+## Contract Addresses
+
+See the [smart contracts repository](https://github.com/scythe504/flake-staking-contracts) for full deployment addresses and protocol documentation.
