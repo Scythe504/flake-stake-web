@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { FaGithub } from "react-icons/fa6"
+import { AlertCircle } from "lucide-react"
 
 export const Footer = () => {
   return (
@@ -30,8 +31,17 @@ export const Footer = () => {
           Sepolia & Base Sepolia Only
         </div>
       </div>
-      <div className="container mx-auto px-4 mt-8 pt-8 border-t border-border/20 text-center text-xs text-muted-foreground">
-        © 2026 Flake Platform. Experimental Staking Infrastructure.
+
+      <div className="container mx-auto px-4 mt-8">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <div className="flex items-center gap-2 text-[10px] text-amber-500/80 font-bold uppercase tracking-widest bg-amber-500/5 px-4 py-1.5 rounded-full border border-amber-500/10">
+            <AlertCircle className="size-3" />
+            Landing page stats are simulated. Real-time on-chain data is available in the Vault Dashboard.
+          </div>
+          <div className="text-[10px] text-muted-foreground/60">
+            © 2026 Flake Platform. Experimental Soulbound Staking Infrastructure.
+          </div>
+        </div>
       </div>
     </footer>
   )
