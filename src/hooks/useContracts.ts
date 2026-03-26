@@ -1,93 +1,118 @@
-import { useChainId, useReadContract, useWriteContract } from "wagmi";
-import { stakingAbi, StakingAbi } from "@/constants/contracts"
+import { useChainId, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { stakingAbi } from "@/constants/contracts";
 import { Address, parseEther } from "viem";
 import { addressConfig } from "@/constants/addresses";
 
-export function useStakeInfo(address: Address,) {
-  const stakingContract = useStakingContract()
+export type StakeInfoReturn = readonly [
+  bigint, // staked
+  bigint, // pending
+  bigint, // stakedBlockNum
+  bigint, // stakedTimestamp
+  boolean, // hasGenesis
+  boolean, // hasWhale
+  boolean // hasDiamondHands
+];
+
+export function useStakeInfo(address?: Address) {
+  const stakingContract = useStakingContract();
   return useReadContract({
     ...stakingContract,
     functionName: "getStakeInfo",
-    args: [address]
-  })
+    args: address ? [address] : undefined,
+    query: {
+      enabled: !!address,
+    },
+  });
 }
 
-export function usePendingRewards(address: Address,) {
+export function usePendingRewards(address?: Address) {
   const stakingContract = useStakingContract();
   return useReadContract({
     ...stakingContract,
     functionName: "pendingRewards",
-    args: [address]
-  })
+    args: address ? [address] : undefined,
+    query: {
+      enabled: !!address,
+    },
+  });
 }
 
 export function useTotalStaked() {
   const stakingContract = useStakingContract();
   return useReadContract({
     ...stakingContract,
-    functionName: "totalStaked"
-  })
+    functionName: "totalStaked",
+  });
 }
 
 export function useStake() {
   const stakingContract = useStakingContract();
-  const { mutate, isPending, isSuccess } = useWriteContract();
+  const { writeContract: mutate, data: hash, error, isPending, status } = useWriteContract();
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
+  });
 
   const stake = (amount: string) => {
+    if (!amount || isNaN(Number(amount))) return;
     mutate({
       ...stakingContract,
       functionName: "stake",
       value: parseEther(amount),
-      args: [parseEther(amount)]
-    })
-  }
+      args: [parseEther(amount)],
+    });
+  };
 
-  return { stake, isPending, isSuccess };
+  return { stake, isPending, status, isConfirming, isConfirmed, hash, error };
 }
 
 export function useUnstake() {
-  const chainId = useChainId()
   const stakingContract = useStakingContract();
-  const { mutate, isPending, isSuccess } = useWriteContract();
+  const { writeContract: mutate, data: hash, error, isPending, status } = useWriteContract();
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
+  });
 
   const unstake = (amount: string) => {
+    if (!amount || isNaN(Number(amount))) return;
     mutate({
       ...stakingContract,
       functionName: "unstake",
-      args: [parseEther(amount)]
-    })
-  }
+      args: [parseEther(amount)],
+    });
+  };
 
-  return { unstake, isPending, isSuccess };
+  return { unstake, isPending, status, isConfirming, isConfirmed, hash, error };
 }
 
 export function useClaimRewards() {
   const stakingContract = useStakingContract();
-  const { mutate, isPending, isSuccess } = useWriteContract();
+  const { writeContract: mutate, data: hash, error, isPending, status } = useWriteContract();
+
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
+  });
 
   const claimRewards = () => {
     mutate({
       ...stakingContract,
       functionName: "claimRewards",
       args: [],
-    })
-  }
+    });
+  };
 
-  return { claimRewards, isPending, isSuccess };
+  return { claimRewards, isPending, status, isConfirming, isConfirmed, hash, error };
 }
 
-export function useStakingContract(): {
-  address: Address;
-  abi: StakingAbi;
-} {
+export function useStakingContract() {
   const chainId = useChainId();
 
-  const chain = chainId === 11155111 ? 'sepolia' : 'base'
+  const chainKey = chainId === 11155111 ? "sepolia" : "base";
+  const address = (addressConfig[chainKey]?.proxyAddr as Address) || "0x0";
 
   return {
-    address: addressConfig[chain].proxyAddr,
-    abi: stakingAbi
-  }
+    address,
+    abi: stakingAbi,
+  };
 }
-
-
